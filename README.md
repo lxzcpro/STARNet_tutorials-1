@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="docs/img/figure1_tutorials.png" alt="STARNet Overview" width="800">
+</p>
 
 <p align="center">
   <strong>Spatially resolved inference of gene regulatory networks from spatial multi-omics data</strong>
