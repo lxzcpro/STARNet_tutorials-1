@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="docs/img/figure1_tutorials.png" alt="STARNet Overview" width="800">
+</p>
 
 <p align="center">
   <strong>Spatially resolved inference of gene regulatory networks from spatial multi-omics data</strong>
@@ -26,13 +29,11 @@ STARNet (**S**pa**T**i**A**l RNA-ATAC-seq gene **R**egulatory **Net**work) is a 
 > [!IMPORTANT]
 >
 > STARNet is not currently distributed on PyPI. Please install it from source.
->
-> For reviewer and manuscript reproduction, prefer the validated `environment-review.yml` workflow in the repository root.
 
 ## Key Features
 
 - Spatially resolved GRN inference from spatial RNA-ATAC-seq and spatial multi-omics data.
-- Reviewer-facing workflows centered on `ST.model.STARNet(...).preprocess()` and `ST.grn.infer_grn_from_multiomics()`.
+- Core workflows centered on `ST.model.STARNet(...).preprocess()` and `ST.grn.infer_grn_from_multiomics()`.
 - Downstream analysis utilities including `ST.pp.extract_peak_gene_associations()`, `ST.pp.score_all_grn()`, and `ST.pp.score_TF_module()`.
 - GWAS-related utilities such as `ST.pp.process_gwas_sumstats()` and SNP / GRN association functions.
 - Online documentation and tutorial notebooks for GRN inference, spatial trajectory analysis, GWAS analysis, and drug response workflows.
@@ -61,18 +62,6 @@ micromamba install uv
 uv pip install -e .
 ```
 
-### Reviewer / manuscript reproduction
-
-For reviewer-facing reproduction, use the validated environment file in the repository root. This is the preferred stable workflow and is kept aligned with `environment-review.yml`. Reviewer installation uses `pip`, not `uv`.
-
-```bash
-conda env create -f environment-review.yml
-conda activate starnet-review
-python -m pip install -e .
-```
-
-For GPU acceleration, install the appropriate CuPy build for your CUDA toolkit.
-
 ### Runtime note for GRN inference
 
 On some systems, the system `libstdc++` may still be picked before the active conda environment and trigger `CXXABI` / `libstdc++` errors for optional genomics tooling.
@@ -91,7 +80,7 @@ After installation, import STARNet as:
 import STARNet as ST
 ```
 
-The current reviewer-facing release is organized around the following entry points:
+The current release is organized around the following entry points:
 
 ```python
 # Model preprocessing
@@ -112,19 +101,6 @@ gwas = ST.pp.process_gwas_sumstats(...)
 
 See the tutorial notebooks and online documentation for complete datasets, parameters, and end-to-end examples.
 
-## Reviewer-Facing Supported Scope
-
-The current revision prioritizes release stability and reviewer reproduction. The main supported workflows are:
-
-- `ST.model.STARNet(...).preprocess()`
-- `ST.grn.infer_grn_from_multiomics()`
-- `ST.pp.extract_peak_gene_associations()`
-- `ST.pp.score_all_grn()`
-- `ST.pp.score_TF_module()`
-- Cauchy combination utilities in `ST.pp`
-- `ST.pp.process_gwas_sumstats()` and SNP / GRN association functions
-- Main GRN and GWAS plotting functions
-
 ## Repository Structure
 
 ```text
@@ -132,7 +108,7 @@ The current revision prioritizes release stability and reviewer reproduction. Th
 ├── STARNet/                 # Main Python package
 ├── STARNet_guide/           # Documentation source and tutorials
 ├── Resource/                # Reference resources bundled with the project
-├── environment-review.yml   # Reviewer / manuscript reproduction environment
+├── environment-review.yml   # Validated reproduction environment
 ├── pyproject.toml           # Package metadata
 ├── README.md
 └── LICENSE
