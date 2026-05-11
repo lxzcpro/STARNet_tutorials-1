@@ -14,9 +14,10 @@ STARNet is developed and tested on Linux. macOS and Windows (WSL) may work but a
 
 ### Quick Install (Recommended)
 
-This repository includes a local installer modeled after OmicVerse's guided install flow, but scoped to the pinned STARNet environment bundled here. It will:
+The quick installer creates a ready-to-use STARNet environment from the files bundled with this repository. It will:
 
-- create or update a dedicated conda environment from `STARNet/environment-review.yml`
+- create or update a dedicated conda environment
+- install the pinned Python dependencies
 - install STARNet in editable mode from the local `STARNet/` source tree
 - verify that `import STARNet as ST` succeeds
 
@@ -24,7 +25,7 @@ This repository includes a local installer modeled after OmicVerse's guided inst
 bash install.sh
 ```
 
-By default this creates an environment named `starnet`, uses your existing `conda` and `pip` mirror configuration, and installs the GPU-enabled dependency set defined by `STARNet/environment-review.yml`. The installer sets longer pip retry and timeout values for large GPU wheels. You can override the environment name if needed:
+By default this creates an environment named `starnet`, uses your existing `conda` and `pip` mirror configuration first, and installs the GPU-enabled dependency set pinned in this repository. If the active pip mirror fails during wheel download, the installer retries once with official PyPI. You can override the environment name if needed:
 
 ```bash
 bash install.sh --env-name starnet-review
@@ -32,19 +33,25 @@ bash install.sh --env-name starnet-review
 
 ### Conda / Mamba Installation
 
-If you prefer to run the steps manually, use the pinned environment file directly.
+If you prefer to run the steps manually, create the conda environment first and then install the pinned Python packages.
 
 #### Mamba
 
 ```bash
-mamba env create -n starnet -f STARNet/environment-review.yml
+mamba env create -n starnet -f STARNet/environment-conda.yml
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
 conda run -n starnet python -m pip install --no-deps --no-build-isolation -e STARNet
 ```
 
 #### Conda
 
 ```bash
-conda env create -n starnet -f STARNet/environment-review.yml
+conda env create -n starnet -f STARNet/environment-conda.yml
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
 conda run -n starnet python -m pip install --no-deps --no-build-isolation -e STARNet
 ```
 
@@ -68,10 +75,14 @@ import STARNet as ST
 
 ### pip Mirror / Wheel Download Errors
 
-The STARNet environment installs GPU-enabled PyTorch dependencies, so the download can be large. The quick installer uses your active `pip` configuration. If a local mirror fails with timeout or corrupted gzip responses, retry with an official upstream index:
+The STARNet environment installs GPU-enabled PyTorch dependencies, so the download can be large. The quick installer uses your active `pip` configuration first. If the active pip mirror fails, it retries once with official PyPI automatically.
+
+For manual installation, use the same fallback pattern:
 
 ```bash
-PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple bash install.sh
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
 ```
 
 ### libstdc++ / CXXABI Errors
