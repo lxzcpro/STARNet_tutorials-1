@@ -38,3 +38,10 @@ docs/api/reference/
 *.swp
 *.swo
 *site*/
+
+
+STARNet
+Result
+
+AGENTS.md
+.*

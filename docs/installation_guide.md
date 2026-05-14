@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-STARNet requires **Python 3.11**. Other Python versions are not claimed as supported unless separately validated.
+STARNet currently supports **Python 3.11** for the validated installation workflow in this repository.
 
-We recommend installing STARNet within a `conda` environment to avoid dependency conflicts.
+We recommend installing STARNet inside a fresh `conda` or `mamba` environment to avoid dependency conflicts.
 
 ### Platform Requirements
 
@@ -12,41 +12,56 @@ STARNet is developed and tested on Linux. macOS and Windows (WSL) may work but a
 
 ## Installation Methods
 
-### Source Installation (Recommended)
+### Quick Install (Recommended)
 
-Currently, STARNet is not available on PyPI. Install directly from the GitHub repository:
+The quick installer creates a ready-to-use STARNet environment from the files bundled with this repository. It will:
 
-**1. Clone the Repository**
+- create or update a dedicated conda environment
+- install the pinned Python dependencies
+- install STARNet in editable mode from the local `STARNet/` source tree
+- verify that `import STARNet as ST` succeeds
 
 ```bash
-git clone https://github.com/DBinary/STARNet.git
+bash install.sh
 ```
 
-**2. Create and Activate a Conda Environment**
+By default this creates an environment named `starnet`, uses your existing `conda` and `pip` mirror configuration first, and installs the GPU-enabled dependency set pinned in this repository. If the active pip mirror fails during wheel download, the installer retries once with official PyPI. You can override the environment name if needed:
 
 ```bash
-conda create -n starnet python=3.11
+bash install.sh --env-name starnet-review
+```
+
+### Conda / Mamba Installation
+
+If you prefer to run the steps manually, create the conda environment first and then install the pinned Python packages.
+
+#### Mamba
+
+```bash
+mamba env create -n starnet -f STARNet/environment-conda.yml
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
+conda run -n starnet python -m pip install --no-deps --no-build-isolation -e STARNet
+```
+
+#### Conda
+
+```bash
+conda env create -n starnet -f STARNet/environment-conda.yml
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
+conda run -n starnet python -m pip install --no-deps --no-build-isolation -e STARNet
+```
+
+After either method, activate the environment:
+
+```bash
 conda activate starnet
 ```
 
-**3. Install STARNet**
-
-```bash
-cd STARNet
-pip install -e .
-```
-
-### Unified Environment Installation
-
-For a validated, reproducible environment with pinned dependencies:
-
-```bash
-conda env create -f environment-review.yml
-conda activate starnet-review
-python -m pip install -e .
-```
-
-This method uses the `environment-review.yml` file bundled in the repository and is the preferred workflow for reproducing manuscript results.
+This pinned environment is the most stable installation path for users and the preferred workflow for reproducing the tutorial and manuscript environment.
 
 ## Usage
 
@@ -58,6 +73,18 @@ import STARNet as ST
 
 ## Troubleshooting
 
+### pip Mirror / Wheel Download Errors
+
+The STARNet environment installs GPU-enabled PyTorch dependencies, so the download can be large. The quick installer uses your active `pip` configuration first. If the active pip mirror fails, it retries once with official PyPI automatically.
+
+For manual installation, use the same fallback pattern:
+
+```bash
+conda run -n starnet python -m pip install -r STARNet/requirements-review.txt || \
+  PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_EXTRA_INDEX_URL= \
+  conda run -n starnet python -m pip install -r STARNet/requirements-review.txt
+```
+
 ### libstdc++ / CXXABI Errors
 
 On some systems, the system `libstdc++` may be picked before the active conda environment, causing errors for optional genomics tooling. If this happens, export the active environment library path before running GRN inference:
@@ -68,4 +95,4 @@ export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
 
 ### GPU Support
 
-For GPU acceleration, install the appropriate CuPy build for your CUDA toolkit after installing STARNet.
+GPU support is part of the recommended environment because STARNet's GRN workflows depend on GPU-accelerated model components. For optional CuPy acceleration, install the CuPy build matching your CUDA toolkit after STARNet is installed.
